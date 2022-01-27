@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Helper;
 use App\Models\Waitlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,15 +27,18 @@ class WaitlistController extends Controller
      */
     public function store(Request $request)
     {
+
+        //this validates the input form
         $validator = Validator::make($request->all(), [
             'fullname' => ['required', 'string'],
             'email_address' => 'required|unique:waitlists',
-            'waitlister_type' => ['required', 'string', Rule::in(['Investor', 'Asset listers'])],
-            'description' => ['nullable', 'string', Rule::requiredIf($request->waitlister_type == 'Assets lister')]
+            'waitlister_type' => ['required', 'string', Rule::in(['Investors', 'Asset listers'])],
+            'description' => ['nullable', 'string', Rule::requiredIf($request->waitlister_type == 'Asset listers')]
         ], $messages = [
             'in' => 'The :attribute must be one of the following types: :values',
         ]);
 
+        //This is returned if an error occurred
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -45,6 +47,7 @@ class WaitlistController extends Controller
             ], 400);
         }
 
+        //This creates a new waitlister
         $waitlister = Waitlist::create([
             'fullname' => $request->fullname,
             'email_address' => $request->email_address,
@@ -52,7 +55,12 @@ class WaitlistController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json($waitlister, 201);
+        //This is returned after a successful creation of a waitlister
+        return response()->json([
+            'status' => true,
+            'message' => "Waitlister successfully created",
+            'waitlister' => $waitlister
+        ], 201);
     }
 
     /**
