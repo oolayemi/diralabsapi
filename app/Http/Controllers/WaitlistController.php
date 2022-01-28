@@ -31,7 +31,7 @@ class WaitlistController extends Controller
         //this validates the input form
         $validator = Validator::make($request->all(), [
             'fullname' => ['required', 'string'],
-            'email_address' => 'required|unique:waitlists',
+            'email_address' => 'required|email|unique:waitlists',
             'waitlister_type' => ['required', 'string', Rule::in(['Investors', 'Asset listers'])],
             'description' => ['nullable', 'string', Rule::requiredIf($request->waitlister_type == 'Asset listers')]
         ], $messages = [
